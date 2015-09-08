@@ -1,6 +1,6 @@
 var util = require('util');
 var sqlite3 = require('sqlite3').verbose();
-var Base = require('./base');
+var Base = require('db-migrate-base');
 var Promise = require('bluebird');
 var util = require('util');
 
