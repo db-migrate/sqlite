@@ -3,6 +3,8 @@ var sqlite3 = require('sqlite3').verbose();
 var Base = require('db-migrate-base');
 var Promise = require('bluebird');
 var util = require('util');
+var log;
+var type;
 
 
 var defaultMode = sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE,
