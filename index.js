@@ -17,6 +17,11 @@ var Sqlite3Driver = Base.extend({
     this.connection = connection;
   },
 
+  createDatabase: function(cb){
+    // sqlite does this automatically if needed
+    return Promise.resolve(null).nodeify(cb);
+  },
+
   startMigration: function(cb){
 
     if(!internals.notransactions) {
