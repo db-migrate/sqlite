@@ -86,7 +86,7 @@ var Sqlite3Driver = Base.extend({
       constraint.push('UNIQUE');
     }
 
-    if (spec.defaultValue) {
+    if (spec.defaultValue !== undefined) {
       constraint.push('DEFAULT');
 
       if(typeof(spec.defaultValue) === 'string')
