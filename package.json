@@ -4,7 +4,7 @@
   "description": "A sqlite driver for db-migrate",
   "main": "index.js",
   "scripts": {
-    "test": "node node_modules/.bin/vows"
+    "test": "vows"
   },
   "repository": {
     "type": "git",
