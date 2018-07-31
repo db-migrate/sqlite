@@ -8,6 +8,8 @@ var driver = require('../');
 
 var config = require('./db.config.json').sqlite3;
 
+var foreignKeyBatch = require('./foreign_key_batch')
+
 var internals = {};
 internals.mod = {
   log: log,
@@ -38,7 +40,7 @@ vows.describe('sqlite3').addBatch({
     teardown: function (db) {
       db.close(function (err) {
         fs.unlink(config.filename, this.callback);
-      });
+      }.bind(this));
     },
 
     'has resulting table metadata': {
@@ -138,7 +140,7 @@ vows.describe('sqlite3').addBatch({
       teardown: function (db) {
         db.close(function (err) {
           fs.unlink(config.filename, this.callback);
-        });
+        }.bind(this));
       },
 
       'has table metadata': {
@@ -172,7 +174,7 @@ vows.describe('sqlite3').addBatch({
       teardown: function (db) {
         db.close(function (err) {
           fs.unlink(config.filename, this.callback);
-        });
+        }.bind(this));
       },
 
       'has table metadata': {
@@ -208,7 +210,7 @@ vows.describe('sqlite3').addBatch({
       teardown: function (db) {
         db.close(function (err) {
           fs.unlink(config.filename, this.callback);
-        });
+        }.bind(this));
       },
 
       'has column metadata': {
@@ -249,7 +251,7 @@ vows.describe('sqlite3').addBatch({
       teardown: function (db) {
         db.close(function (err) {
           fs.unlink(config.filename, this.callback);
-        });
+        }.bind(this));
       },
 
       'has resulting index metadata': {
@@ -287,7 +289,7 @@ vows.describe('sqlite3').addBatch({
       teardown: function (db) {
         db.close(function (err) {
           fs.unlink(config.filename, this.callback);
-        });
+        }.bind(this));
       },
 
       'with additional row': function (db) {
@@ -312,7 +314,7 @@ vows.describe('sqlite3').addBatch({
       teardown: function (db) {
         db.close(function (err) {
           fs.unlink(config.filename, this.callback);
-        });
+        }.bind(this));
       },
 
       'with additional row': function (db) {
@@ -339,7 +341,7 @@ vows.describe('sqlite3').addBatch({
       teardown: function (db) {
         db.close(function (err) {
           fs.unlink(config.filename, this.callback);
-        });
+        }.bind(this));
       },
 
       'has resulting index metadata': {
@@ -376,7 +378,7 @@ vows.describe('sqlite3').addBatch({
       teardown: function (db) {
         db.close(function (err) {
           fs.unlink(config.filename, this.callback);
-        });
+        }.bind(this));
       },
 
       'has resulting index metadata': {
@@ -406,7 +408,7 @@ vows.describe('sqlite3').addBatch({
       teardown: function (db) {
         db.close(function (err) {
           fs.unlink(config.filename, this.callback);
-        });
+        }.bind(this));
       },
 
       'has migrations table': {
@@ -452,7 +454,8 @@ vows.describe('sqlite3').addBatch({
         }
       }
     }
-  }).export(module);
+}).addBatch( foreignKeyBatch(driver, config, internals) )
+  .export(module);
 
 function findByName(columns, name) {
   for (var i = 0; i < columns.length; i++) {
