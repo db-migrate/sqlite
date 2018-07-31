@@ -56,20 +56,21 @@ var Sqlite3Driver = Base.extend({
     callback(null);
   },
 
-  createColumnDef: function(name, spec, options) {
-    name = '"' + name + '"';
+  createColumnDef: function(name, spec, options, tableName) {
+    var quotedName = '"' + name + '"';
     var dType       = this.mapDataType(spec.type);
     var len        = spec.length ? util.format('(%s)', spec.length) : '';
-    var constraint = this.createColumnConstraint(spec, options);
+    var constraint = this.createColumnConstraint(spec, options, tableName, name);
 
     if(spec.type === type.INTEGER)
       len = '';
 
     return { foreignKey: null,
-                 constraints: [name, dType, len, constraint].join(' ') };
+                 constraints: [quotedName, dType, len, constraint].join(' ') };
   },
 
-  createColumnConstraint: function(spec, options) {
+  createColumnConstraint: function(spec, options, tableName, columnName) {
+    var cb;
     var constraint = [];
     if (spec.primaryKey && options.emitPrimaryKey) {
       constraint.push('PRIMARY KEY');
@@ -93,6 +94,22 @@ var Sqlite3Driver = Base.extend({
         constraint.push('"' + spec.defaultValue + '"');
       else
         constraint.push(spec.defaultValue);
+    }
+
+    if (spec.foreignKey) {
+      constraint.push(`REFERENCES ${spec.foreignKey.table}(${spec.foreignKey.mapping})`)
+      if( spec.foreignKey.rules ){
+        Object.keys(spec.foreignKey.rules)
+          .forEach( (rule) => {
+            switch(rule){
+              case 'onDelete': constraint.push(`ON DELETE ${spec.foreignKey.rules[rule]}`)
+              break
+              case 'onUpdate': constraint.push(`ON UPDATE ${spec.foreignKey.rules[rule]}`)
+              break
+              default: throw new Error('Unsupported foreign key action trigger: ' + rule )
+            }
+          })
+      }
     }
 
     return constraint.join(' ');
