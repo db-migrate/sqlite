@@ -15,6 +15,22 @@ var Sqlite3Driver = Base.extend({
     this.connection = connection;
   },
 
+  _translateSpecialDefaultValues: function (
+    spec,
+    options,
+    tableName,
+    columnName
+  ) {
+    switch (spec.defaultValue.special) {
+      case 'CURRENT_TIMESTAMP':
+        spec.defaultValue.prep = 'CURRENT_TIMESTAMP';
+        break;
+      default:
+        this.super(spec, options, tableName, columnName);
+        break;
+    }
+  },
+
   createDatabase: function (cb) {
     // sqlite does this automatically if needed
     return Promise.resolve(null).nodeify(cb);
@@ -84,7 +100,11 @@ var Sqlite3Driver = Base.extend({
 
       if (typeof spec.defaultValue === 'string') {
         constraint.push('"' + spec.defaultValue + '"');
-      } else constraint.push(spec.defaultValue);
+      } else if (typeof spec.defaultValue.prep === 'string') {
+        constraint.push(spec.defaultValue.prep);
+      } else {
+        constraint.push(spec.defaultValue);
+      }
     }
 
     return constraint.join(' ');
@@ -139,9 +159,15 @@ var Sqlite3Driver = Base.extend({
   },
 
   all: function () {
-    this.log.sql.apply(null, arguments);
+    var params = arguments;
 
-    this.connection.all.apply(this.connection, arguments);
+    this.log.sql.apply(null, params);
+
+    return new Promise((resolve, reject) => {
+      this.connection.all(params[0], function (err, result) {
+        return err ? reject(err) : resolve(result);
+      });
+    }).nodeify(params[1]);
   },
 
   close: function (callback) {
