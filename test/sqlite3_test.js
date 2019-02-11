@@ -19,120 +19,166 @@ internals.interfaces = {
 };
 internals.migrationTable = 'migrations';
 
-vows.describe('sqlite3').addBatch({
-  'createTable': {
-    topic: function () {
-      driver.connect(config, internals, function (err, db) {
-        db.createTable('event', {
-          id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true, notNull: true },
-          str: { type: dataType.STRING, unique: true },
-          txt: { type: dataType.TEXT, notNull: true, defaultValue: "foo" },
-          intg: dataType.INTEGER,
-          rel: dataType.REAL,
-          dt: dataType.DATE_TIME,
-          bl: dataType.BOOLEAN
-        }, this.callback.bind(this, null, db));
-      }.bind(this));
-    },
-
-    teardown: function (db) {
-      db.close(function (err) {
-        fs.unlink(config.filename, this.callback);
-      });
-    },
-
-    'has resulting table metadata': {
-      topic: function (db) {
-        dbmeta('sqlite3', {connection: db.connection}, function (err, meta) {
-          if (err) {
-            return this.callback(err);
-          }
-          meta.getTables(this.callback);
-        }.bind(this));
+vows
+  .describe('sqlite3')
+  .addBatch({
+    createTable: {
+      topic: function () {
+        driver.connect(
+          config,
+          internals,
+          function (err, db) {
+            db.createTable(
+              'event',
+              {
+                id: {
+                  type: dataType.INTEGER,
+                  primaryKey: true,
+                  autoIncrement: true,
+                  notNull: true
+                },
+                str: { type: dataType.STRING, unique: true },
+                txt: {
+                  type: dataType.TEXT,
+                  notNull: true,
+                  defaultValue: 'foo'
+                },
+                intg: dataType.INTEGER,
+                rel: dataType.REAL,
+                dt: dataType.DATE_TIME,
+                bl: dataType.BOOLEAN
+              },
+              this.callback.bind(this, null, db)
+            );
+          }.bind(this)
+        );
       },
 
-      'containing the event table': function (err, tables) {
-        assert.isNull(err);
-        var table = findByName(tables, 'event');
-        assert.isNotNull(table);
-        assert.equal(table.getName(), 'event');
-      }
-    },
-
-    'has column metadata for the event table': {
-      topic: function (db) {
-        dbmeta('sqlite3', {connection: db.connection}, function (err, meta) {
-          if (err) {
-            return this.callback(err);
-          }
-          meta.getColumns('event', this.callback);
-        }.bind(this));
+      teardown: function (db) {
+        db.close(function (err) {
+          fs.unlink(config.filename, this.callback);
+        });
       },
 
-      'with 7 columns': function (err, columns) {
-        assert.isNotNull(columns);
-        assert.equal(columns.length, 7);
+      'has resulting table metadata': {
+        topic: function (db) {
+          dbmeta(
+            'sqlite3',
+            { connection: db.connection },
+            function (err, meta) {
+              if (err) {
+                return this.callback(err);
+              }
+              meta.getTables(this.callback);
+            }.bind(this)
+          );
+        },
+
+        'containing the event table': function (err, tables) {
+          assert.isNull(err);
+          var table = findByName(tables, 'event');
+          assert.isNotNull(table);
+          assert.equal(table.getName(), 'event');
+        }
       },
 
-      'that has integer id column that is primary key, non-nullable, and auto increments': function (err, columns) {
-        var column = findByName(columns, 'id');
-        assert.equal(column.getDataType(), 'INTEGER');
-        assert.equal(column.isPrimaryKey(), true);
-        assert.equal(column.isNullable(), false);
-        assert.equal(column.isAutoIncrementing(), true);
-      },
+      'has column metadata for the event table': {
+        topic: function (db) {
+          dbmeta(
+            'sqlite3',
+            { connection: db.connection },
+            function (err, meta) {
+              if (err) {
+                return this.callback(err);
+              }
+              meta.getColumns('event', this.callback);
+            }.bind(this)
+          );
+        },
 
-      'that has text str column that is unique': function (err, columns) {
-        var column = findByName(columns, 'str');
-        assert.equal(column.getDataType(), 'VARCHAR');
-        assert.equal(column.isUnique(), true);
-      },
+        'with 7 columns': function (err, columns) {
+          assert.isNotNull(columns);
+          assert.equal(columns.length, 7);
+        },
 
-      'that has text txt column that is non-nullable': function (err, columns) {
-        var column = findByName(columns, 'txt');
-        assert.equal(column.getDataType(), 'TEXT');
-        assert.equal(column.isNullable(), false);
-//        assert.equal(column.getDefaultValue(), 'foo');
-      },
+        'that has integer id column that is primary key, non-nullable, and auto increments': function (
+          err,
+          columns
+        ) {
+          var column = findByName(columns, 'id');
+          assert.equal(column.getDataType(), 'INTEGER');
+          assert.equal(column.isPrimaryKey(), true);
+          assert.equal(column.isNullable(), false);
+          assert.equal(column.isAutoIncrementing(), true);
+        },
 
-      'that has integer intg column': function (err, columns) {
-        var column = findByName(columns, 'intg');
-        assert.equal(column.getDataType(), 'INTEGER');
-        assert.equal(column.isNullable(), true);
-      },
+        'that has text str column that is unique': function (err, columns) {
+          var column = findByName(columns, 'str');
+          assert.equal(column.getDataType(), 'VARCHAR');
+          assert.equal(column.isUnique(), true);
+        },
 
-      'that has real rel column': function (err, columns) {
-        var column = findByName(columns, 'rel');
-        assert.equal(column.getDataType(), 'REAL');
-        assert.equal(column.isNullable(), true);
-      },
+        'that has text txt column that is non-nullable': function (
+          err,
+          columns
+        ) {
+          var column = findByName(columns, 'txt');
+          assert.equal(column.getDataType(), 'TEXT');
+          assert.equal(column.isNullable(), false);
+          //        assert.equal(column.getDefaultValue(), 'foo');
+        },
 
-      'that has integer dt column': function (err, columns) {
-        var column = findByName(columns, 'dt');
-        assert.equal(column.getDataType(), 'DATETIME');
-        assert.equal(column.isNullable(), true);
-      },
+        'that has integer intg column': function (err, columns) {
+          var column = findByName(columns, 'intg');
+          assert.equal(column.getDataType(), 'INTEGER');
+          assert.equal(column.isNullable(), true);
+        },
 
-      'that has boolean bl column': function (err, columns) {
-        var column = findByName(columns, 'bl');
-        assert.equal(column.getDataType(), 'BOOLEAN');
-        assert.equal(column.isNullable(), true);
+        'that has real rel column': function (err, columns) {
+          var column = findByName(columns, 'rel');
+          assert.equal(column.getDataType(), 'REAL');
+          assert.equal(column.isNullable(), true);
+        },
+
+        'that has integer dt column': function (err, columns) {
+          var column = findByName(columns, 'dt');
+          assert.equal(column.getDataType(), 'DATETIME');
+          assert.equal(column.isNullable(), true);
+        },
+
+        'that has boolean bl column': function (err, columns) {
+          var column = findByName(columns, 'bl');
+          assert.equal(column.getDataType(), 'BOOLEAN');
+          assert.equal(column.isNullable(), true);
+        }
       }
     }
-  }
-}).addBatch({
-    'dropTable': {
+  })
+  .addBatch({
+    dropTable: {
       topic: function () {
-        driver.connect(config, internals, function (err, db) {
-          db.createTable('event', {
-            id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
-          }, function (err) {
-            if (err) {
-              return this.callback(err);
-            }
-            db.dropTable('event', this.callback.bind(this, null, db));
-          }.bind(this));
-        }.bind(this));
+        driver.connect(
+          config,
+          internals,
+          function (err, db) {
+            db.createTable(
+              'event',
+              {
+                id: {
+                  type: dataType.INTEGER,
+                  primaryKey: true,
+                  autoIncrement: true
+                }
+              },
+              function (err) {
+                if (err) {
+                  return this.callback(err);
+                }
+                db.dropTable('event', this.callback.bind(this, null, db));
+              }.bind(this)
+            );
+          }.bind(this)
+        );
       },
 
       teardown: function (db) {
@@ -143,12 +189,16 @@ vows.describe('sqlite3').addBatch({
 
       'has table metadata': {
         topic: function (db) {
-          dbmeta('sqlite3', {connection: db.connection}, function (err, meta) {
-            if (err) {
-              return this.callback(err);
-            }
-            meta.getTables(this.callback);
-          }.bind(this));
+          dbmeta(
+            'sqlite3',
+            { connection: db.connection },
+            function (err, meta) {
+              if (err) {
+                return this.callback(err);
+              }
+              meta.getTables(this.callback);
+            }.bind(this)
+          );
         },
 
         'containing no tables': function (err, tables) {
@@ -157,16 +207,33 @@ vows.describe('sqlite3').addBatch({
         }
       }
     }
-  }).addBatch({
-    'renameTable': {
+  })
+  .addBatch({
+    renameTable: {
       topic: function () {
-        driver.connect(config, internals, function (err, db) {
-          db.createTable('event', {
-            id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
-          }, function () {
-            db.renameTable('event', 'functions', this.callback.bind(this, null, db));
-          }.bind(this));
-        }.bind(this));
+        driver.connect(
+          config,
+          internals,
+          function (err, db) {
+            db.createTable(
+              'event',
+              {
+                id: {
+                  type: dataType.INTEGER,
+                  primaryKey: true,
+                  autoIncrement: true
+                }
+              },
+              function () {
+                db.renameTable(
+                  'event',
+                  'functions',
+                  this.callback.bind(this, null, db)
+                );
+              }.bind(this)
+            );
+          }.bind(this)
+        );
       },
 
       teardown: function (db) {
@@ -177,12 +244,16 @@ vows.describe('sqlite3').addBatch({
 
       'has table metadata': {
         topic: function (db) {
-          dbmeta('sqlite3', {connection: db.connection}, function (err, meta) {
-            if (err) {
-              return this.callback(err);
-            }
-            meta.getTables(this.callback);
-          }.bind(this));
+          dbmeta(
+            'sqlite3',
+            { connection: db.connection },
+            function (err, meta) {
+              if (err) {
+                return this.callback(err);
+              }
+              meta.getTables(this.callback);
+            }.bind(this)
+          );
         },
 
         'containing the functions table': function (err, tables) {
@@ -193,16 +264,34 @@ vows.describe('sqlite3').addBatch({
         }
       }
     }
-  }).addBatch({
-    'addColumn': {
+  })
+  .addBatch({
+    addColumn: {
       topic: function () {
-        driver.connect(config, internals, function (err, db) {
-          db.createTable('event', {
-            id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
-          }, function () {
-            db.addColumn('event', 'title', 'string', this.callback.bind(this, null, db));
-          }.bind(this));
-        }.bind(this));
+        driver.connect(
+          config,
+          internals,
+          function (err, db) {
+            db.createTable(
+              'event',
+              {
+                id: {
+                  type: dataType.INTEGER,
+                  primaryKey: true,
+                  autoIncrement: true
+                }
+              },
+              function () {
+                db.addColumn(
+                  'event',
+                  'title',
+                  'string',
+                  this.callback.bind(this, null, db)
+                );
+              }.bind(this)
+            );
+          }.bind(this)
+        );
       },
 
       teardown: function (db) {
@@ -213,12 +302,16 @@ vows.describe('sqlite3').addBatch({
 
       'has column metadata': {
         topic: function (db) {
-          dbmeta('sqlite3', {connection: db.connection}, function (err, meta) {
-            if (err) {
-              return this.callback(err);
-            }
-            meta.getColumns('event', this.callback);
-          }.bind(this));
+          dbmeta(
+            'sqlite3',
+            { connection: db.connection },
+            function (err, meta) {
+              if (err) {
+                return this.callback(err);
+              }
+              meta.getColumns('event', this.callback);
+            }.bind(this)
+          );
         },
 
         'with additional title column': function (err, columns) {
@@ -230,20 +323,38 @@ vows.describe('sqlite3').addBatch({
         }
       }
     }
-// removeColumn
-// renameColumn
-// changeColumn
-  }).addBatch({
-    'addIndex': {
+    // removeColumn
+    // renameColumn
+    // changeColumn
+  })
+  .addBatch({
+    addIndex: {
       topic: function () {
-        driver.connect(config, internals, function (err, db) {
-          db.createTable('event', {
-            id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-            title: { type: dataType.STRING }
-          }, function () {
-            db.addIndex('event', 'event_title', 'title', this.callback.bind(this, null, db));
-          }.bind(this));
-        }.bind(this));
+        driver.connect(
+          config,
+          internals,
+          function (err, db) {
+            db.createTable(
+              'event',
+              {
+                id: {
+                  type: dataType.INTEGER,
+                  primaryKey: true,
+                  autoIncrement: true
+                },
+                title: { type: dataType.STRING }
+              },
+              function () {
+                db.addIndex(
+                  'event',
+                  'event_title',
+                  'title',
+                  this.callback.bind(this, null, db)
+                );
+              }.bind(this)
+            );
+          }.bind(this)
+        );
       },
 
       teardown: function (db) {
@@ -254,12 +365,16 @@ vows.describe('sqlite3').addBatch({
 
       'has resulting index metadata': {
         topic: function (db) {
-          dbmeta('sqlite3', {connection: db.connection}, function (err, meta) {
-            if (err) {
-              return this.callback(err);
-            }
-            meta.getIndexes('event', this.callback);
-          }.bind(this));
+          dbmeta(
+            'sqlite3',
+            { connection: db.connection },
+            function (err, meta) {
+              if (err) {
+                return this.callback(err);
+              }
+              meta.getIndexes('event', this.callback);
+            }.bind(this)
+          );
         },
 
         'with additional index': function (err, indexes) {
@@ -271,17 +386,35 @@ vows.describe('sqlite3').addBatch({
         }
       }
     }
-  }).addBatch({
-    'insert': {
+  })
+  .addBatch({
+    insert: {
       topic: function () {
-        driver.connect(config, internals, function (err, db) {
-          db.createTable('event', {
-            id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-            title: { type: dataType.STRING }
-          }, function () {
-            db.insert('event', ['id', 'title'], [2, 'title'], this.callback.bind(this, null, db));
-          }.bind(this));
-        }.bind(this));
+        driver.connect(
+          config,
+          internals,
+          function (err, db) {
+            db.createTable(
+              'event',
+              {
+                id: {
+                  type: dataType.INTEGER,
+                  primaryKey: true,
+                  autoIncrement: true
+                },
+                title: { type: dataType.STRING }
+              },
+              function () {
+                db.insert(
+                  'event',
+                  ['id', 'title'],
+                  [2, 'title'],
+                  this.callback.bind(this, null, db)
+                );
+              }.bind(this)
+            );
+          }.bind(this)
+        );
       },
 
       teardown: function (db) {
@@ -291,22 +424,40 @@ vows.describe('sqlite3').addBatch({
       },
 
       'with additional row': function (db) {
-        db.all("SELECT * from event;", function (err, data) {
+        db.all('SELECT * from event;', function (err, data) {
           assert.equal(data.length, 1);
         });
       }
     }
-  }).addBatch({
-    'insertWithSingleQuotes': {
+  })
+  .addBatch({
+    insertWithSingleQuotes: {
       topic: function () {
-        driver.connect(config, internals, function (err, db) {
-          db.createTable('event', {
-            id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-            title: { type: dataType.STRING }
-          }, function () {
-            db.insert('event', ['id', 'title'], [2, "Bill's Mother's House"], this.callback.bind(this, null, db));
-          }.bind(this));
-        }.bind(this));
+        driver.connect(
+          config,
+          internals,
+          function (err, db) {
+            db.createTable(
+              'event',
+              {
+                id: {
+                  type: dataType.INTEGER,
+                  primaryKey: true,
+                  autoIncrement: true
+                },
+                title: { type: dataType.STRING }
+              },
+              function () {
+                db.insert(
+                  'event',
+                  ['id', 'title'],
+                  [2, "Bill's Mother's House"],
+                  this.callback.bind(this, null, db)
+                );
+              }.bind(this)
+            );
+          }.bind(this)
+        );
       },
 
       teardown: function (db) {
@@ -316,24 +467,45 @@ vows.describe('sqlite3').addBatch({
       },
 
       'with additional row': function (db) {
-        db.all("SELECT * from event;", function (err, data) {
+        db.all('SELECT * from event;', function (err, data) {
           assert.equal(data.length, 1);
         });
       }
     }
-  }).addBatch({
-    'removeIndex': {
+  })
+  .addBatch({
+    removeIndex: {
       topic: function () {
-        driver.connect(config, internals, function (err, db) {
-          db.createTable('event', {
-            id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-            title: { type: dataType.STRING }
-          }, function (err) {
-            db.addIndex('event', 'event_title', 'title', function (err) {
-              db.removeIndex('event_title', this.callback.bind(this, null, db));
-            }.bind(this));
-          }.bind(this));
-        }.bind(this));
+        driver.connect(
+          config,
+          internals,
+          function (err, db) {
+            db.createTable(
+              'event',
+              {
+                id: {
+                  type: dataType.INTEGER,
+                  primaryKey: true,
+                  autoIncrement: true
+                },
+                title: { type: dataType.STRING }
+              },
+              function (err) {
+                db.addIndex(
+                  'event',
+                  'event_title',
+                  'title',
+                  function (err) {
+                    db.removeIndex(
+                      'event_title',
+                      this.callback.bind(this, null, db)
+                    );
+                  }.bind(this)
+                );
+              }.bind(this)
+            );
+          }.bind(this)
+        );
       },
 
       teardown: function (db) {
@@ -344,12 +516,16 @@ vows.describe('sqlite3').addBatch({
 
       'has resulting index metadata': {
         topic: function (db) {
-          dbmeta('sqlite3', {connection: db.connection}, function (err, meta) {
-            if (err) {
-              return this.callback(err);
-            }
-            meta.getIndexes('event', this.callback);
-          }.bind(this));
+          dbmeta(
+            'sqlite3',
+            { connection: db.connection },
+            function (err, meta) {
+              if (err) {
+                return this.callback(err);
+              }
+              meta.getIndexes('event', this.callback);
+            }.bind(this)
+          );
         },
 
         'without index': function (err, indexes) {
@@ -358,19 +534,41 @@ vows.describe('sqlite3').addBatch({
         }
       }
     }
-  }).addBatch({
-    'removeIndexWithTableName': {
+  })
+  .addBatch({
+    removeIndexWithTableName: {
       topic: function () {
-        driver.connect(config, internals, function (err, db) {
-          db.createTable('event', {
-            id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-            title: { type: dataType.STRING }
-          }, function (err) {
-            db.addIndex('event', 'event_title', 'title', function (err) {
-              db.removeIndex('event', 'event_title', this.callback.bind(this, null, db));
-            }.bind(this));
-          }.bind(this));
-        }.bind(this));
+        driver.connect(
+          config,
+          internals,
+          function (err, db) {
+            db.createTable(
+              'event',
+              {
+                id: {
+                  type: dataType.INTEGER,
+                  primaryKey: true,
+                  autoIncrement: true
+                },
+                title: { type: dataType.STRING }
+              },
+              function (err) {
+                db.addIndex(
+                  'event',
+                  'event_title',
+                  'title',
+                  function (err) {
+                    db.removeIndex(
+                      'event',
+                      'event_title',
+                      this.callback.bind(this, null, db)
+                    );
+                  }.bind(this)
+                );
+              }.bind(this)
+            );
+          }.bind(this)
+        );
       },
 
       teardown: function (db) {
@@ -381,12 +579,16 @@ vows.describe('sqlite3').addBatch({
 
       'has resulting index metadata': {
         topic: function (db) {
-          dbmeta('sqlite3', {connection: db.connection}, function (err, meta) {
-            if (err) {
-              return this.callback(err);
-            }
-            meta.getIndexes('event', this.callback);
-          }.bind(this));
+          dbmeta(
+            'sqlite3',
+            { connection: db.connection },
+            function (err, meta) {
+              if (err) {
+                return this.callback(err);
+              }
+              meta.getIndexes('event', this.callback);
+            }.bind(this)
+          );
         },
 
         'without index': function (err, indexes) {
@@ -395,12 +597,17 @@ vows.describe('sqlite3').addBatch({
         }
       }
     }
-  }).addBatch({
-    'createMigrationsTable': {
+  })
+  .addBatch({
+    createMigrationsTable: {
       topic: function () {
-        driver.connect(config, internals, function (err, db) {
-          db.createMigrationsTable(this.callback.bind(this, null, db));
-        }.bind(this));
+        driver.connect(
+          config,
+          internals,
+          function (err, db) {
+            db.createMigrationsTable(this.callback.bind(this, null, db));
+          }.bind(this)
+        );
       },
 
       teardown: function (db) {
@@ -411,12 +618,16 @@ vows.describe('sqlite3').addBatch({
 
       'has migrations table': {
         topic: function (db) {
-          dbmeta('sqlite3', {connection: db.connection}, function (err, meta) {
-            if (err) {
-              return this.callback(err);
-            }
-            meta.getTables(this.callback.bind(this));
-          }.bind(this));
+          dbmeta(
+            'sqlite3',
+            { connection: db.connection },
+            function (err, meta) {
+              if (err) {
+                return this.callback(err);
+              }
+              meta.getTables(this.callback.bind(this));
+            }.bind(this)
+          );
         },
 
         'has migrations table': function (err, tables) {
@@ -424,17 +635,21 @@ vows.describe('sqlite3').addBatch({
           assert.isNotNull(tables);
           assert.equal(tables.length, 2);
           assert.equal(tables[0].getName(), 'migrations');
-        },
+        }
       },
 
       'that has columns': {
         topic: function (db) {
-          dbmeta('sqlite3', {connection: db.connection}, function (err, meta) {
-            if (err) {
-              return this.callback(err);
-            }
-            meta.getColumns('migrations', this.callback);
-          }.bind(this));
+          dbmeta(
+            'sqlite3',
+            { connection: db.connection },
+            function (err, meta) {
+              if (err) {
+                return this.callback(err);
+              }
+              meta.getColumns('migrations', this.callback);
+            }.bind(this)
+          );
         },
 
         'with names': function (err, columns) {
@@ -452,9 +667,10 @@ vows.describe('sqlite3').addBatch({
         }
       }
     }
-  }).export(module);
+  })
+  .export(module);
 
-function findByName(columns, name) {
+function findByName (columns, name) {
   for (var i = 0; i < columns.length; i++) {
     if (columns[i].getName() === name) {
       return columns[i];
