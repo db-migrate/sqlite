@@ -20,6 +20,8 @@ os:
   - linux
 
 matrix:
+  allow_failures:
+    - node_js: node
   fast_finish: true
 
 sudo: false
@@ -40,4 +42,4 @@ before_install:
   - export CXX=g++-4.8; export CC=gcc-4.8;
 
 before_script:
-    - cp test/db.config.ci test/db.config.json
+  - cp test/db.config.ci test/db.config.json
