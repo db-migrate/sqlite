@@ -8,7 +8,7 @@ var dataType = require('db-migrate-shared').dataType;
 var log = require('db-migrate-shared').log;
 var driver = require('../');
 
-var config = require('./db.config.json').sqlite3;
+var config = require('./db.config.example.json').sqlite3;
 var db;
 
 var internals = {};
