@@ -1,6 +1,6 @@
 {
   "name": "db-migrate-sqlite3",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "A sqlite driver for db-migrate",
   "main": "index.js",
   "scripts": {
@@ -31,7 +31,7 @@
   "dependencies": {
     "bluebird": "^3.1.1",
     "db-migrate-base": "^1.6.3",
-    "sqlite3": "^4.0.1"
+    "sqlite3": "^5.0.0"
   },
   "devDependencies": {
     "db-meta": "^0.5.1",
