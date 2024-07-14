@@ -162,12 +162,20 @@ var Sqlite3Driver = Base.extend({
     var params = arguments;
 
     this.log.sql.apply(null, params);
+    const cb = params[params.length - 1];
 
     return new Promise((resolve, reject) => {
-      this.connection.all(params[0], function (err, result) {
+      const p = [params[0]]
+      if(params.length > 2) {
+        p[1] = params[1]
+      }
+
+      p.push(function (err, result) {
+        console.log(result)
         return err ? reject(err) : resolve(result);
-      });
-    }).nodeify(params[1]);
+      })
+      this.connection.all.apply(this.connection, p);
+    }).nodeify(cb);
   },
 
   close: function (callback) {
