@@ -1,6 +1,6 @@
 {
   "name": "db-migrate-sqlite3",
-  "version": "0.5.0",
+  "version": "1.0.0",
   "description": "A sqlite driver for db-migrate",
   "main": "index.js",
   "scripts": {
