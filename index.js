@@ -171,7 +171,6 @@ var Sqlite3Driver = Base.extend({
       }
 
       p.push(function (err, result) {
-        console.log(result)
         return err ? reject(err) : resolve(result);
       })
       this.connection.all.apply(this.connection, p);
