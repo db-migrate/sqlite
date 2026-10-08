@@ -182,6 +182,13 @@ var Sqlite3Driver = Base.extend({
 
     if (typeof callback === 'function') callback(null);
     else return Promise.resolve();
+  },
+
+  _meta: {
+    supports: {
+      // state methods are safe for the migration lock
+      locking: true
+    }
   }
 });
 
