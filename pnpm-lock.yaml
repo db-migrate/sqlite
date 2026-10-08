@@ -12,8 +12,8 @@ importers:
         specifier: ^3.7.2
         version: 3.7.2
       db-migrate-base:
-        specifier: ^2.3.1
-        version: 2.3.1
+        specifier: ^2.4.0
+        version: 2.4.0
       sqlite3:
         specifier: ^5.1.7
         version: 5.1.7(bluebird@3.7.2)
@@ -122,8 +122,8 @@ packages:
     resolution: {integrity: sha512-HDg12J3WzhQgoq1p0NWLuVFhPvGB9EvXCoJV0VKCgU2/nXrg+OuuSwXfmgwgOPhhOxIV/5+X1iBoQEKga/KauA==}
     engines: {node: '>=0.6'}
 
-  db-migrate-base@2.3.1:
-    resolution: {integrity: sha512-HewYQ3HPmy7NOWmhhMLg9TzN1StEtSqGL3w8IbBRCxEsJ+oM3bDUQ/z5fqpYKfIUK07mMXieCmZYwFpwWkSHDw==}
+  db-migrate-base@2.4.0:
+    resolution: {integrity: sha512-4UQtOGPSNdravJTR83BPbf6faj7nn5UCk4IYHoGLVkJoQtfVG+Z0sX7U+LSEZqe/EqtLB3jJW+ncBfnESGLdpw==}
 
   db-migrate-shared@1.2.0:
     resolution: {integrity: sha512-65k86bVeHaMxb2L0Gw3y5V+CgZSRwhVQMwDMydmw5MvIpHHwD6SmBciqIwHsZfzJ9yzV/yYhdRefRM6FV5/siw==}
@@ -657,7 +657,7 @@ snapshots:
 
   db-meta@0.5.1: {}
 
-  db-migrate-base@2.3.1:
+  db-migrate-base@2.4.0:
     dependencies:
       bluebird: 3.7.2
 
