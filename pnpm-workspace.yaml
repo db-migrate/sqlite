@@ -1,0 +1,2 @@
+minimumReleaseAgeExclude:
+  - db-migrate-base@2.4.0
