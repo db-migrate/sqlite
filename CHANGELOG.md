@@ -1,3 +1,18 @@
+# [1.1.0](https://github.com/db-migrate/sqlite/compare/v1.0.2...v1.1.0) (2026-10-08)
+
+
+### Features
+
+* declare support for the migration lock ([34e3b80](https://github.com/db-migrate/sqlite/commit/34e3b8041b223f22d88e046a326214355dddcad6))
+
+
+### Notes
+
+* Requires db-migrate-base 2.4.0, state, migration and seed records are now written
+  with `run_on` set by the database clock (`CURRENT_TIMESTAMP`, UTC).
+
+
+
 <a name="0.4.0"></a>
 # [0.4.0](https://github.com/db-migrate/sqlite/compare/v0.3.1...v0.4.0) (2019-02-11)
 
