@@ -197,12 +197,16 @@ var Sqlite3Driver = Base.extend({
     var params = arguments;
 
     this.log.sql.apply(null, params);
-    const cb = params[params.length - 1];
+    const cb =
+      typeof params[params.length - 1] === 'function'
+        ? params[params.length - 1]
+        : undefined;
 
     return new Promise((resolve, reject) => {
-      const p = [params[0]]
-      if(params.length > 2) {
-        p[1] = params[1]
+      const p = [params[0]];
+      // the parameters, with or without a callback following them
+      if (params.length > 1 && typeof params[1] !== 'function') {
+        p[1] = params[1];
       }
 
       p.push(function (err, result) {

@@ -375,6 +375,48 @@ vows
     }
   })
   .addBatch({
+    'all with parameters': {
+      topic: function () {
+        driver.connect(
+          config,
+          internals,
+          function (err, db) {
+            assert.isNull(err);
+            this.db = db;
+            db.createTable('event', {
+              id: { type: dataType.INTEGER, primaryKey: true },
+              title: { type: dataType.STRING }
+            })
+              .then(function () {
+                return db.insert('event', [
+                  { id: 1, title: 'a' },
+                  { id: 2, title: 'b' }
+                ]);
+              })
+              .then(function () {
+                return db.all('SELECT id FROM event WHERE title = ?', ['b']);
+              })
+              .nodeify(this.callback);
+          }.bind(this)
+        );
+      },
+
+      teardown: function () {
+        this.db
+          .close()
+          .then(function () {
+            return unlink(config.filename);
+          })
+          .nodeify(this.callback);
+      },
+
+      'without a callback': function (err, rows) {
+        assert.isNull(err);
+        assert.deepEqual(rows, [{ id: 2 }]);
+      }
+    }
+  })
+  .addBatch({
     removeColumn: {
       topic: function () {
         driver.connect(
