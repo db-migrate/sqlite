@@ -3,5 +3,6 @@ allowBuilds:
 minimumReleaseAgeExclude:
   - db-migrate-base@2.4.0
   - db-migrate-base@2.4.1
+  - db-migrate-base@2.5.0
 overrides:
   tar: ^7.5.21
