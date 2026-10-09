@@ -132,11 +132,34 @@ var Sqlite3Driver = Base.extend({
     return this.runSql(sql).nodeify(callback);
   },
 
-  // removeColumn: function(tableName, columnName, callback) {
-  // },
+  // needs SQLite 3.35, bundled with sqlite3 5.1
+  removeColumn: function (tableName, columnName, callback) {
+    if (typeof callback === 'object') {
+      callback = null;
+    }
 
-  // renameColumn: function(tableName, oldColumnName, newColumnName, callback) {
-  // };
+    var sql = util.format(
+      'ALTER TABLE "%s" DROP COLUMN "%s"',
+      tableName,
+      columnName
+    );
+    return this.runSql(sql).nodeify(callback);
+  },
+
+  // needs SQLite 3.25
+  renameColumn: function (tableName, oldColumnName, newColumnName, callback) {
+    if (typeof callback === 'object') {
+      callback = null;
+    }
+
+    var sql = util.format(
+      'ALTER TABLE "%s" RENAME COLUMN "%s" TO "%s"',
+      tableName,
+      oldColumnName,
+      newColumnName
+    );
+    return this.runSql(sql).nodeify(callback);
+  },
 
   // changeColumn: function(tableName, columnName, columnSpec, callback) {
   // },

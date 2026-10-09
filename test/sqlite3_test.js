@@ -373,9 +373,55 @@ vows
         }
       }
     }
-    // removeColumn
-    // renameColumn
-    // changeColumn
+  })
+  .addBatch({
+    removeColumn: {
+      topic: function () {
+        driver.connect(
+          config,
+          internals,
+          function (err, db) {
+            assert.isNull(err);
+            db.createTable(
+              'event',
+              {
+                id: { type: dataType.INTEGER, primaryKey: true },
+                title: { type: dataType.STRING },
+                body: { type: dataType.STRING }
+              },
+              function () {
+                this.db = db;
+                db.removeColumn('event', 'title')
+                  .then(function () {
+                    return db.renameColumn('event', 'body', 'text');
+                  })
+                  .then(function () {
+                    return db.insert('event', { id: 1, text: 'x' });
+                  })
+                  .then(function () {
+                    return db.all('SELECT * FROM event');
+                  })
+                  .nodeify(this.callback);
+              }.bind(this)
+            );
+          }.bind(this)
+        );
+      },
+
+      teardown: function () {
+        this.db
+          .close()
+          .then(function () {
+            return unlink(config.filename);
+          })
+          .nodeify(this.callback);
+      },
+
+      'drops and renames the columns': function (err, rows) {
+        assert.isNull(err);
+        assert.deepEqual(rows, [{ id: 1, text: 'x' }]);
+      }
+    }
   })
   .addBatch({
     addIndex: {
