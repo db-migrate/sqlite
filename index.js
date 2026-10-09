@@ -247,6 +247,12 @@ exports.connect = function (config, intern, callback) {
     var db = new sqlite3.Database(config.filename, mode);
     db.on('error', callback);
     db.on('open', function () {
+      // wait for the locks of other connections to the same file, e.g. the
+      // second connection of db-migrate, instead of failing with SQLITE_BUSY
+      db.configure(
+        'busyTimeout',
+        config.busyTimeout === undefined ? 5000 : config.busyTimeout
+      );
       callback(null, new Sqlite3Driver(db, intern));
     });
   }
