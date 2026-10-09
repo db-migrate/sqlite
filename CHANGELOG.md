@@ -1,3 +1,18 @@
+# [1.2.0](https://github.com/db-migrate/sqlite/compare/v1.1.1...v1.2.0) (2026-10-09)
+
+
+### Bug Fixes
+
+* escape string defaults ([3d843d4](https://github.com/db-migrate/sqlite/commit/3d843d47703c32f3160cc23ef6e3de52a421f9a2))
+
+
+### Features
+
+* removeColumn and renameColumn ([7a9e735](https://github.com/db-migrate/sqlite/commit/7a9e735f8114a73c9b9cef3d9927e669ec52e730))
+* insert objects and several rows, with db-migrate-base 2.5.0 ([364d2c0](https://github.com/db-migrate/sqlite/commit/364d2c0f4bf7ebad145dead0b02bffaea4da0d7a))
+
+
+
 ## [1.1.1](https://github.com/db-migrate/sqlite/compare/v1.1.0...v1.1.1) (2026-10-09)
 
 
