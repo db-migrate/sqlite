@@ -1,3 +1,12 @@
+## [1.1.1](https://github.com/db-migrate/sqlite/compare/v1.1.0...v1.1.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* db commands, missing filename and special default values ([1d34a9b](https://github.com/db-migrate/sqlite/commit/1d34a9b1abbcd474992dd8bae74579a03fe3f2d3))
+
+
+
 # [1.1.0](https://github.com/db-migrate/sqlite/compare/v1.0.2...v1.1.0) (2026-10-08)
 
 
