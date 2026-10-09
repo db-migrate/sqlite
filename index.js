@@ -26,14 +26,26 @@ var Sqlite3Driver = Base.extend({
         spec.defaultValue.prep = 'CURRENT_TIMESTAMP';
         break;
       default:
-        this.super(spec, options, tableName, columnName);
+        this._super(spec, options, tableName, columnName);
         break;
     }
   },
 
-  createDatabase: function (cb) {
-    // sqlite does this automatically if needed
-    return Promise.resolve(null).nodeify(cb);
+  createDatabase: function (dbName, options, callback) {
+    if (typeof options === 'function') callback = options;
+
+    // sqlite creates the database file on its own when connecting
+    return Promise.resolve(null).nodeify(callback);
+  },
+
+  dropDatabase: function (dbName, options, callback) {
+    if (typeof options === 'function') callback = options;
+
+    return Promise.reject(
+      new Error(
+        'sqlite has no databases to drop, delete the database file instead'
+      )
+    ).nodeify(callback);
   },
 
   startMigration: function (cb) {
@@ -203,8 +215,7 @@ exports.connect = function (config, intern, callback) {
     callback(null, new Sqlite3Driver(config.db));
   } else {
     if (typeof config.filename === 'undefined') {
-      console.error('filename is required in database.json');
-      return;
+      return callback(new Error('filename is required in database.json'));
     }
     var db = new sqlite3.Database(config.filename, mode);
     db.on('error', callback);
