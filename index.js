@@ -111,7 +111,7 @@ var Sqlite3Driver = Base.extend({
       constraint.push('DEFAULT');
 
       if (typeof spec.defaultValue === 'string') {
-        constraint.push('"' + spec.defaultValue + '"');
+        constraint.push(this.escapeString(spec.defaultValue));
       } else if (typeof spec.defaultValue.prep === 'string') {
         constraint.push(spec.defaultValue.prep);
       } else {
