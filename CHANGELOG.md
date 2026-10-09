@@ -1,3 +1,13 @@
+## [1.2.1](https://github.com/db-migrate/sqlite/compare/v1.2.0...v1.2.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* all with parameters and without a callback ([d681885](https://github.com/db-migrate/sqlite/commit/d681885979687b038acf2d570b6a24a13781cebf))
+* wait for locks of other connections instead of failing busy ([289d808](https://github.com/db-migrate/sqlite/commit/289d808493ef83e921f802c6e47b4da932f3febf))
+
+
+
 # [1.2.0](https://github.com/db-migrate/sqlite/compare/v1.1.1...v1.2.0) (2026-10-09)
 
 
